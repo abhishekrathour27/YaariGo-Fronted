@@ -1,91 +1,108 @@
 "use client";
-import { Plus } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useModal } from "@/context/ModalContext";
+import { Plus, Trash2, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import StoryInput from "../StoryInput/StoryInput";
 
 const Story: React.FC = () => {
-  // base64 strings (for uploading)
-  const [images, setImages] = useState<string[]>([]);
-  // object URLs for previewing in <img>
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>([]); // base64
+  const [previews, setPreviews] = useState<string>(); // object URLs (if needed)
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { openModal } = useModal();
 
-  // handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
+    const files = e.target.files!;
+    if (files?.length === 0) return;
 
-    // create object URLs for previews
-    const newPreviews = files.map((file) => URL.createObjectURL(file));
-    // append new previews (you can also replace if you want)
-    setPreviews((prev) => [...prev, ...newPreviews]);
+    const newPreviews = URL.createObjectURL(files[0]);
+    setPreviews(newPreviews);
+    openModal(<StoryInput previews={newPreviews} setImages={setImages} />);
 
-    // convert to base64 strings for uploading
-    const base64Promises = files.map(
-      (file) =>
-        new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.readAsDataURL(file);
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.onerror = (err) => reject(err);
-        })
-    );
+    // const base64Promises = files.map(
+    //   (file) =>
+    //     new Promise<string>((resolve, reject) => {
+    //       const reader = new FileReader();
+    //       reader.readAsDataURL(file);
+    //       reader.onloadend = () => resolve(reader.result as string);
+    //       reader.onerror = (err) => reject(err);
+    //     })
+    // );
 
-    Promise.all(base64Promises)
-      .then((base64Array) => {
-        setImages((prev) => [...prev, ...base64Array]);
-      })
-      .catch((err) => {
-        console.error("Failed to read files as base64", err);
-      });
+    // Promise.all(base64Promises)
+    //   .then((base64Array) => {
+    //     setImages((prev) => [...prev, ...base64Array]);
 
-    // clear the input value so selecting the same file again will trigger change
+    //     // open modal and pass images & previews (use whichever your StoryInput expects)
+    //   })
+    //   .catch((err) => {
+    //     console.error("Failed to read files as base64", err);
+    //   });
+
     e.currentTarget.value = "";
   };
 
-  // cleanup object URLs on unmount or when previews change
-  // useEffect(() => {
-  //   return () => {
-  //     previews.forEach((url) => URL.revokeObjectURL(url));
-  //   };
-  // }, [previews]);
+  const handleRemoveStory = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+    setImages((prev) => {
+      // revoke the removed preview URL
+      if (prev?.[index]) URL.revokeObjectURL(prev[index]);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
 
   return (
-    <div className="w-[40vw] flex h-fit items-center gap-20">
-      <div className="bg-[#1e2735] flex flex-col items-center rounded-lg my-5 w-fit">
-        <div className="bg-gray-400 h-40 w-40 rounded-lg relative z-50 text-4xl flex items-center justify-center">
+    <div className="w-full flex flex-col lg:flex-row items-start  gap-8 p-6">
+      {/* Left: user card */}
+      <div className=" bg-[#0f1724] pl-10 rounded-2xl p-6 shadow-lg flex flex-col items-center gap-4">
+        <div className="h-28 w-28 bg-gray-300 rounded-2xl relative flex items-center justify-center text-2xl font-semibold text-gray-800 shadow-inner">
           AS
         </div>
 
-        <div className="flex flex-col items-center gap-2 mt-1">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <div className="bg-indigo-600 h-9 w-9 rounded-full flex items-center justify-center">
-              <Plus />
-            </div>
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            <span className="text-sm">Create Story</span>
-          </label>
+        <div className="text-center">
+          <div className="text-white font-medium text-lg">Abhishek Singh</div>
+          <div className="text-sm text-gray-400">Share your story</div>
         </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          aria-label="Create Story"
+          className="mt-2 inline-flex items-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-full shadow-md transition"
+        >
+          <div className="bg-indigo-600/90 p-1 rounded-full">
+            <Plus size={16} />
+          </div>
+          <span className="font-medium">Create Story</span>
+        </button>
       </div>
 
-      {/* previews grid */}
-      <div className="grid grid-cols-4 gap-2">
-        {previews.map((src, idx) => (
-          <img
-            key={idx}
-            src={src}
-            alt={`preview-${idx}`}
-            className=" object-cover rounded"
+      {/* Right: previews */}
+
+      {images.map((src, idx) => (
+        <div
+          key={idx}
+          className="relative rounded-lg overflow-hidden shadow-md h-40 w-40 bg-gray-800"
+        >
+          <Trash2
+            onClick={() => handleRemoveStory(idx)}
+            className="absolute cursor-pointer z-50"
           />
-        ))}
-      </div>
-
-      {/* (optional) show that base64 strings exist for upload */}
-      {/* <pre style={{ maxHeight: 120, overflow: "auto" }}>{JSON.stringify(images, null, 2)}</pre> */}
+          <img
+            src={images[idx] ?? src}
+            alt={`preview-${idx}`}
+            className="w-full h-full object-cover"
+          />
+        </div>
+      ))}
     </div>
   );
 };
