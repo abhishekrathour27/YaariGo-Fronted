@@ -41,7 +41,7 @@ const SignUpForm: React.FC<SignUpFormProps> = (switchToLogin) => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
+    <div className="max-h-[50vh] flex items-center justify-center px-4">
       <div className="max-w-md w-full border border-indigo-200 rounded-2xl shadow-xl p-6 mt-10 bg-white">
         {/* Header */}
         <div className="text-center mb-6">

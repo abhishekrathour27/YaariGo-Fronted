@@ -8,8 +8,11 @@ import {
   Store,
   Users,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+
+  const router = useRouter()
   return (
     <header className="w-full bg-[#171718] border-b border-slate-500">
       <div className="max-w-8xl mx-auto px-6 py-3 flex items-center justify-around">
@@ -47,11 +50,12 @@ export default function Navbar() {
             {/* Home (active) */}
             <li>
               <button
-                className="flex flex-col cursor-pointer items-center px-3 pb-3 py-2 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-indigo-400"
+                className="flex flex-col cursor-pointer items-center px-3 pb-3 py-2 rounded-md hover:bg-gray-600 focus:outline-none"
                 aria-label="Home"
                 title="Home"
               >
-                <HomeIcon className="w-6 h-6" />
+                <HomeIcon onClick={()=> router.push("/")}
+                 className="w-6 h-6" />
               </button>
             </li>
 

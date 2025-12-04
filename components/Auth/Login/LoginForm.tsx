@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { LoginFormData, LoginFormSchema } from "./validation/LoginFormSchema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { User } from "lucide-react";
+import { Lock, User } from "lucide-react";
 import Button from "@/components/custom/CustomBtn/Button";
 
 type LoginFormProps = {
@@ -34,8 +34,8 @@ const LoginForm: React.FC<LoginFormProps> = (switchToLogin) => {
     }
   };
   return (
-    <div className="min-h-[90vh] flex items-center justify-center px-4 ">
-      <div className="max-w-md  w-full border border-indigo-200 rounded-2xl shadow-xl p-6 mt-10 bg-white">
+    <div className="h-[20vh] flex items-center justify-center px-4 ">
+      <div className="max-w-md  w-full border border-indigo-200 rounded-2xl shadow-xl p-6  bg-white">
         <div className="text-center mb-6">
           <h2 className="text-3xl font-bold text-gray-800">
             Login to <span style={{ color: "#4F39F6" }}>YaariGo</span>
@@ -46,11 +46,11 @@ const LoginForm: React.FC<LoginFormProps> = (switchToLogin) => {
         </div>
         <form onSubmit={handleSubmit(submit)} className="flex flex-col gap-3">
           <div
-            className={`relative flex items-center border rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-300 bg-white transition ${
+            className={`relative flex items-center border rounded-lg gap-3 px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-300 bg-white transition ${
               errors.email ? "ring-1 ring-red-200 border-red-300" : ""
             }`}
           >
-            <User
+            <User className="text-slate-500"
             />
             <input
               type="text"
@@ -61,11 +61,11 @@ const LoginForm: React.FC<LoginFormProps> = (switchToLogin) => {
             />
           </div>
           <div
-            className={`relative flex items-center border rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-300 bg-white transition ${
+            className={`relative flex items-center border rounded-lg gap-3 px-3 py-2 focus-within:ring-2 focus-within:ring-indigo-300 bg-white transition ${
               errors.password ? "ring-1 ring-red-200 border-red-300" : ""
             }`}
           >
-            <User
+            <Lock className="text-slate-500"
             />
             <input
               type="text"
