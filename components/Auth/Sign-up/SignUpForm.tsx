@@ -7,16 +7,19 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import CustomBtn from "@/components/custom/CustomBtn/Button";
 import { Eye, EyeClosed, Lock, User, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
-
+import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 type SignUpFormProps = {
   switchToLogin: () => void;
 };
 
-const SignUpForm: React.FC<SignUpFormProps> = (switchToLogin) => {
+const SignUpForm: React.FC<SignUpFormProps> = ({ switchToLogin }) => {
   const router = useRouter();
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const { signup } = useAuth();
 
   const {
     register,
@@ -29,10 +32,13 @@ const SignUpForm: React.FC<SignUpFormProps> = (switchToLogin) => {
   const submit = async (data: SignUpFormData) => {
     setLoading(true);
     try {
-      // keep same behavior as before (no nav here if you don't want)
-      await new Promise((r) => setTimeout(r, 900));
-      console.log("Sign up data:", data);
-      router.push("/welcome");
+      const response = await signup(data);
+
+      console.log(response.status);
+
+      if (response?.status === "success") {
+        switchToLogin();
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -45,8 +51,12 @@ const SignUpForm: React.FC<SignUpFormProps> = (switchToLogin) => {
       <div className="max-w-md w-full border border-indigo-200 rounded-2xl shadow-xl p-6 mt-10 bg-white">
         {/* Header */}
         <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-800">Sign up to <span style={{color:"#4F39F6"}}>YaariGo</span></h2>
-          <p className="text-gray-500 mt-1">Welcome! Fill in the details to get started</p>
+          <h2 className="text-3xl font-bold text-gray-800">
+            Sign up to <span style={{ color: "#4F39F6" }}>YaariGo</span>
+          </h2>
+          <p className="text-gray-500 mt-1">
+            Welcome! Fill in the details to get started
+          </p>
         </div>
 
         {/* Form */}
@@ -107,7 +117,7 @@ const SignUpForm: React.FC<SignUpFormProps> = (switchToLogin) => {
               errors.password ? "ring-1 ring-red-200 border-red-300" : ""
             }`}
           >
-            <Lock className="text-gray-600"/>
+            <Lock className="text-gray-600" />
             <input
               type={showPass ? "text" : "password"}
               placeholder="Password"
@@ -116,7 +126,9 @@ const SignUpForm: React.FC<SignUpFormProps> = (switchToLogin) => {
               aria-invalid={!!errors.password}
             />
             <div
-              className={`absolute right-3 cursor-pointer ${errors.password ? "text-red-500" : "text-gray-600"}`}
+              className={`absolute right-3 cursor-pointer ${
+                errors.password ? "text-red-500" : "text-gray-600"
+              }`}
               onClick={() => setShowPass(!showPass)}
               role="button"
               aria-label={showPass ? "Hide password" : "Show password"}
@@ -137,7 +149,9 @@ const SignUpForm: React.FC<SignUpFormProps> = (switchToLogin) => {
           {/* Submit Button */}
           <CustomBtn
             type="submit"
-            className={`w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold transition ${loading ? "opacity-80 cursor-wait" : ""}`}
+            className={`w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold transition ${
+              loading ? "opacity-80 cursor-wait" : ""
+            }`}
             disabled={loading}
           >
             {loading ? "Creating..." : "Sign Up"}

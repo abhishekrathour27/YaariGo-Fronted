@@ -4,6 +4,8 @@ import "./globals.css";
 import NavbarHOC from "@/components/custom/Navbar/NavbarHOC";
 import ClientLayout from "@/layout/ClientLayout";
 import { ModalProvider } from "@/context/ModalContext";
+import { AuthProvider } from "@/context/AuthContext";
+import {Toaster} from "sonner"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,8 +32,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0F0F10]`}
       >
+        <Toaster position="bottom-right" richColors duration={2000} />
         <ModalProvider>
-          <ClientLayout>{children}</ClientLayout>
+          <AuthProvider>
+            <ClientLayout>{children}</ClientLayout>
+          </AuthProvider>
         </ModalProvider>
       </body>
     </html>

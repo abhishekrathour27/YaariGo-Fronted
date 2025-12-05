@@ -23,7 +23,8 @@ export default function ClientLayout({
 
   return (
     <>
-      {routePart !== "story" && <NavbarHOC />}
+      {routePart !== "story" && routePart !== "userLogin" && <NavbarHOC />}
+      {/* {routePart !== "userLogin" && <NavbarHOC />} */}
       {children}
       {/* {routePart !== "admin" && <FooterHOC />} */}
     </>
