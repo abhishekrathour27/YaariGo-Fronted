@@ -145,3 +145,15 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide horizontal scrollbar everywhere */
+.hide-scrollbar::-webkit-scrollbar {
+  height: 0px;
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none;    /* Firefox */
+}
+

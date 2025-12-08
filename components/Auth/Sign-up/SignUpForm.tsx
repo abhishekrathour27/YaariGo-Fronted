@@ -162,7 +162,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ switchToLogin }) => {
         <div className="flex justify-center mt-4 text-sm" aria-live="polite">
           <span className="text-gray-600 mr-2">Already have an account?</span>
           <button
-            // onClick={switchToLogin}
+            onClick={switchToLogin}
             className="ml-1 font-medium hover:underline cursor-pointer"
             style={{ color: "#4f46e5" }} // explicit indigo color to avoid overrides
           >

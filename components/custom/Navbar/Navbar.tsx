@@ -11,8 +11,18 @@ import {
 import { useRouter } from "next/navigation";
 
 export default function Navbar() {
+  const userDetail = localStorage.getItem("user");
+  const user = userDetail ? JSON.parse(userDetail) : null;
 
-  const router = useRouter()
+  const userName = user.name;
+
+  const initials = user?.name
+    ?.split(" ") // ["Abhishek", "singh"]
+    .map((word: string) => word[0]) // ["A", "s"]
+    .join("") // "As"
+    .toUpperCase();
+
+  const router = useRouter();
   return (
     <header className="w-full bg-[#171718] border-b border-slate-500">
       <div className="max-w-8xl mx-auto px-6 py-3 flex items-center justify-around">
@@ -22,17 +32,19 @@ export default function Navbar() {
             className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-400 border shadow-sm shrink-0"
             aria-label="YaariGo home"
           >
-           <p>Y</p>
+            <p>Y</p>
           </a>
 
-         <div className="relative">
-              <input
-                type="search"
-                placeholder="Search"
-                className=" rounded-xl border w-[20vw] border-gray-100 px-4 py-2 text-sm shadow-sm focus:ring-2 focus:ring-indigo-200 outline-none"
-              />
-              <div className="absolute right-3 top-2 text-gray-400 text-xs">/</div>
+          <div className="relative">
+            <input
+              type="search"
+              placeholder="Search"
+              className=" rounded-xl border w-[20vw] border-gray-100 px-4 py-2 text-sm shadow-sm focus:ring-2 focus:ring-indigo-200 outline-none"
+            />
+            <div className="absolute right-3 top-2 text-gray-400 text-xs">
+              /
             </div>
+          </div>
 
           {/* small-screen search button */}
           <button
@@ -54,8 +66,10 @@ export default function Navbar() {
                 aria-label="Home"
                 title="Home"
               >
-                <HomeIcon onClick={()=> router.push("/")}
-                 className="w-6 h-6" />
+                <HomeIcon
+                  onClick={() => router.push("/")}
+                  className="w-6 h-6"
+                />
               </button>
             </li>
 
@@ -121,7 +135,7 @@ export default function Navbar() {
           {/* avatar */}
 
           <div className="w-9 h-9 rounded-full bg-gray-600 flex items-center justify-center text-sm">
-            A
+            {initials}
           </div>
         </div>
       </div>

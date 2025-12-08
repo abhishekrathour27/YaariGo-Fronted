@@ -10,10 +10,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 type LoginFormProps = {
-  switchToLogin: () => void;
+  switchToSignUp: () => void;
 };
 
-const LoginForm: React.FC<LoginFormProps> = (switchToLogin) => {
+const LoginForm: React.FC<LoginFormProps> = ({switchToSignUp}) => {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -96,6 +96,16 @@ const LoginForm: React.FC<LoginFormProps> = (switchToLogin) => {
             </div>
           </div>
           <Button className="bg-[#4f39f6] w-full">Login</Button>
+          <center className="text-slate-600">
+            Don't have an acoount ?{" "}
+            <span
+              onClick={ switchToSignUp}
+              className="ml-1 font-medium hover:underline cursor-pointer"
+              style={{ color: "#4f46e5" }}
+            >
+              Sign-in
+            </span>
+          </center>
         </form>
       </div>
     </div>

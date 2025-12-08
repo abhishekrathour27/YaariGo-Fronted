@@ -49,7 +49,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
           else setIsOpenModal(true);
         }}
       >
-        <DialogContent className="bg-white text-black rounded-lg shadow-lg">
+        <DialogContent className="bg-slate-600 text-black rounded-lg shadow-lg">
           <DialogTitle className="sr-only">Modal</DialogTitle>
           <div className="mt-4">{modalContent}</div>
         </DialogContent>
@@ -62,7 +62,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
         }}
       >
         <SheetContent>
-          <SheetTitle className="sr-only">Sheet</SheetTitle>
+          <SheetTitle className="sr-only bg-slate-800">Sheet</SheetTitle>
           <div className="mt-4">{sheetContent}</div>
         </SheetContent>
       </Sheet>

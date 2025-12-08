@@ -23,13 +23,12 @@ const StoryInput: React.FC<StoryInputProps> = ({
     // fetch("/api/stories", { method: "POST", body: JSON.stringify({ images }) })
     setImages?.((prev) => [...prev, previews]);
 
-    onClose?.();
     closeModal()
   };
 
 
   return (
-    <div className="max-w-md w-full bg-white rounded-lg p-4 shadow-md">
+    <div className="max-w-md w-full bg-slate-700 rounded-lg p-4 shadow-md">
       <div className="flex items-center gap-3 mb-4">
         <div className="h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center font-semibold">
           AS

@@ -20,6 +20,16 @@ export default function Sidebar() {
     { id: "messages", label: "Messages", icon: <MessageCircle size={18} /> },
   ];
 
+  const userDetail = localStorage.getItem("user");
+  const user = userDetail ? JSON.parse(userDetail) : null;
+
+  const userName = user.name;
+  const initials = user?.name
+    ?.split(" ") // ["Abhishek", "singh"]
+    .map((word: string) => word[0]) // ["A", "s"]
+    .join("") // "As"
+    .toUpperCase();
+
   return (
     <aside className="w-64 h-[90vh] bg-[#171718] text-[#FFFFFF] border-r border-slate-500 shadow-sm flex flex-col  justify-between p-5">
       <div className="space-y-50">
@@ -28,10 +38,10 @@ export default function Sidebar() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#5B6FFF] to-[#FF5BA8] flex items-center justify-center text-white font-bold text-lg shadow-md">
-                A
+                {initials}
               </div>
               <div className="leading-tight">
-                <div className="text-sm font-semibold ">Abhishek</div>
+                <div className="text-sm font-semibold ">{userName}</div>
               </div>
             </div>
           </div>
