@@ -2,8 +2,9 @@
 import { useModal } from "@/context/ModalContext";
 import { Plus } from "lucide-react";
 import React, { useRef, useState } from "react";
-import StoryInput from "../../StoryI-O/StoryInput";
-import StoryOutput from "../../StoryI-O/StoryOutput";
+import StoryInput from "../../StoryI&O/StoryInput";
+import StoryOutput from "../../StoryI&O/StoryOutput";
+import Button from "@/components/custom/CustomBtn/Button";
 
 const StorySection: React.FC = () => {
   const [images, setImages] = useState<string[]>([]); // base64
@@ -39,9 +40,9 @@ const StorySection: React.FC = () => {
     .toUpperCase();
 
   return (
-    <div className="w-full flex flex-col lg:flex-row items-start gap-8 p-6">
+    <div className="w-full bg-[#171718] p-2 flex flex-col lg:flex-row items-start gap-8 pt-2 rounded-lg shadow-xl">
       {/* Left: user card */}
-      <div className="bg-[#0f1724] pl-10 rounded-2xl h-fit w-50 p-6 shadow-lg flex flex-col items-center justify-center gap-2">
+      <div className="bg-[#36363abc] pl-10 rounded-2xl  p-6 shadow-lg flex flex-col items-center justify-center gap-2">
         <div className="h-20 w-20 bg-gray-300 rounded-2xl relative flex items-center justify-center text-2xl font-semibold text-gray-800 shadow-inner">
           {initials}
         </div>
@@ -59,17 +60,17 @@ const StorySection: React.FC = () => {
           className="hidden"
         />
 
-        <button
+        <Button
           type="button"
           onClick={() => fileInputRef.current?.click()}
           aria-label="Create Story"
-          className="mt-2 inline-flex items-center gap-1 px-1.5 py-2 bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white rounded-full shadow-md transition"
+          className="mt-2 inline-flex items-center gap-1"
         >
           <div className="bg-indigo-600/90 p-1 rounded-full">
             <Plus size={16} />
           </div>
           <span className="font-medium">Create Story</span>
-        </button>
+        </Button>
       </div>
 
       {/* Right: previews (horizontal scroll) */}

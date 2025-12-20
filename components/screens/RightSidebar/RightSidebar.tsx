@@ -3,7 +3,7 @@ import React from "react";
 const RightSidebar: React.FC = () => {
   return (
     <aside
-      className="w-80 min-w-[18rem] max-w-sm bg-gray-900 text-gray-200 px-4 py-6 rounded-l-2xl shadow-xl"
+      className="w-80 min-w-[18rem] h-[92vh] max-w-sm bg-gray-900 text-gray-200 px-4 py-6 "
       aria-label="Right sidebar"
     >
       {/* Header */}
@@ -13,7 +13,7 @@ const RightSidebar: React.FC = () => {
       </div>
 
       {/* Scrollable cards area */}
-      <div className="space-y-4 overflow-y-auto max-h-[72vh] pr-2">
+      <div className="space-y-4 pr-2">
         {/* Card 1 */}
         <article className="bg-gray-800 rounded-2xl p-4 flex flex-col gap-4 shadow-md">
           <div className="rounded-lg overflow-hidden h-36 flex items-center justify-center bg-gray-700">

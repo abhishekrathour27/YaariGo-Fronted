@@ -1,142 +1,154 @@
-import React from "react";
+"use client";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Bell,
   HomeIcon,
+  LogOut,
   MessageCircle,
   Search,
   SquarePlay,
   Store,
+  Sun,
+  UserRound,
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
+  const [modal, setModal] = useState(false);
+  const modalRef = useRef<HTMLDivElement | null>(null);
+
+  const { logout } = useAuth();
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        setModal(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const userDetail = localStorage.getItem("user");
   const user = userDetail ? JSON.parse(userDetail) : null;
 
-  const userName = user.name;
-
   const initials = user?.name
-    ?.split(" ") // ["Abhishek", "singh"]
-    .map((word: string) => word[0]) // ["A", "s"]
-    .join("") // "As"
+    ?.split(" ")
+    .map((word: string) => word[0])
+    .join("")
     .toUpperCase();
 
   const router = useRouter();
+
+  const logoutUser = async () => {
+    try {
+      await logout();
+      localStorage.removeItem("user");
+      router.push("/userLogin");
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   return (
-    <header className="w-full bg-[#171718] border-b border-slate-500">
-      <div className="max-w-8xl mx-auto px-6 py-3 flex items-center justify-around">
+    <header className="w-full bg-[#171718] border-b border-slate-600 sticky top-0 left-0  z-50 ">
+      <div className="max-w-8xl mx-auto px-6 py-3 flex items-center justify-between">
+        {/* LEFT */}
         <div className="flex items-center gap-4">
           <a
             href="/"
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-400 border shadow-sm shrink-0"
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-black font-semibold shadow-sm hover:scale-105 transition"
             aria-label="YaariGo home"
           >
-            <p>Y</p>
+            Y
           </a>
 
-          <div className="relative">
+          <div className="relative hidden md:block">
             <input
               type="search"
               placeholder="Search"
-              className=" rounded-xl border w-[20vw] border-gray-100 px-4 py-2 text-sm shadow-sm focus:ring-2 focus:ring-indigo-200 outline-none"
+              className="rounded-xl w-[22vw] bg-[#1f1f20] text-sm text-gray-200 border border-gray-600 px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none"
             />
-            <div className="absolute right-3 top-2 text-gray-400 text-xs">
-              /
-            </div>
+            <Search className="absolute right-3 top-2.5 w-4 h-4 text-gray-400" />
           </div>
-
-          {/* small-screen search button */}
-          <button
-            className="md:hidden inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            aria-label="Open search"
-            title="Search"
-          >
-            <Search className="w-5 h-5 text-gray-600" />
-          </button>
         </div>
 
-        {/* CENTER: main nav icons */}
-        <nav aria-label="Primary" className="flex-1 flex justify-center">
-          <ul className="flex items-center gap-15">
-            {/* Home (active) */}
-            <li>
-              <button
-                className="flex flex-col cursor-pointer items-center px-3 pb-3 py-2 rounded-md hover:bg-gray-600 focus:outline-none"
-                aria-label="Home"
-                title="Home"
-              >
-                <HomeIcon
-                  onClick={() => router.push("/")}
-                  className="w-6 h-6"
-                />
-              </button>
-            </li>
-
-            {/* Reels / Video */}
-            <li>
-              <button
-                className="flex flex-col cursor-pointer items-center px-3 py-2 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-indigo-400"
-                aria-label="Reels"
-                title="Reels"
-              >
-                <SquarePlay className="w-6 h-6" />
-                <span className="mt-1 block h-1 w-8 rounded-full bg-transparent" />
-              </button>
-            </li>
-
-            {/* Store / Marketplace */}
-            <li>
-              <button
-                className="flex flex-col cursor-pointer items-center px-3 py-2 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-indigo-400"
-                aria-label="Marketplace"
-                title="Marketplace"
-              >
-                <Store className="w-6 h-6" />
-                <span className="mt-1 block h-1 w-8 rounded-full bg-transparent" />
-              </button>
-            </li>
-
-            {/* Community / Groups */}
-            <li>
-              <button
-                className="flex flex-col cursor-pointer items-center px-3 py-2 rounded-md hover:bg-gray-600 focus:outline-none focus:bg-indigo-400"
-                aria-label="Community"
-                title="Community"
-              >
-                <Users className="w-6 h-6" />
-                <span className="mt-1 block h-1 w-8 rounded-full bg-transparent" />
-              </button>
-            </li>
-          </ul>
+        {/* CENTER */}
+        <nav className="flex gap-10">
+          {[HomeIcon, SquarePlay, Store, Users].map((Icon, i) => (
+            <button
+              key={i}
+              className="p-2 rounded-lg hover:bg-gray-600 transition"
+            >
+              <Icon className="w-6 h-6" />
+            </button>
+          ))}
         </nav>
 
-        {/* RIGHT: action icons + avatar */}
-        <div className="flex items-center gap-3">
-          {/* menu button */}
-          {/* messages */}
-          <button
-            className="p-2 rounded-full hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            aria-label="Messages"
-            title="Messages"
-          >
+        {/* RIGHT */}
+        <div className="flex items-center gap-3 relative">
+          <button className="p-2 rounded-full hover:bg-gray-600 transition">
             <MessageCircle />
           </button>
 
-          {/* notifications with badge */}
-          <button
-            className="p-2 rounded-full hover:bg-gray-600 relative focus:outline-none focus:ring-2 focus:ring-blue-300"
-            aria-label="Notifications"
-            title="Notifications"
-          >
+          <button className="p-2 rounded-full hover:bg-gray-600 transition">
             <Bell />
           </button>
 
-          {/* avatar */}
-
-          <div className="w-9 h-9 rounded-full bg-gray-600 flex items-center justify-center text-sm">
+          <div
+            onClick={() => setModal(!modal)}
+            className="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-semibold cursor-pointer hover:scale-105 transition"
+          >
             {initials}
           </div>
+
+          {modal && (
+            <div
+              ref={modalRef}
+              className="absolute right-0 top-12 w-75 bg-black text-white rounded-xl shadow-xl overflow-hidden z-50"
+            >
+              <div
+                onClick={() => {
+                  setModal(!modal);
+                  router.push("/profile");
+                }}
+                className="flex items-center gap-3 p-4  text-sm cursor-pointer border-b border-slate-400"
+              >
+                <div className="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                  {initials}
+                </div>
+                <div>
+                  <p className="font-semibold">{user?.name}</p>
+                  <p className="text-sm text-gray-400">{user?.email}</p>
+                </div>
+              </div>
+              <div className="space-y-2 py-3 border-b border-slate-400">
+                <div className="flex items-center gap-5 pl-5 text-sm cursor-pointer hover:bg-gray-700 p-1 rounded-lg">
+                  <UserRound className="text-slate-200 " />
+                  <p className="font-semibold text-slate-200">Profile</p>
+                </div>
+                <div className="flex items-center gap-5 pl-5 text-sm cursor-pointer hover:bg-gray-700 p-1 rounded-lg">
+                  <MessageCircle className="text-slate-200 " />
+                  <p className="font-semibold text-slate-200">Message</p>
+                </div>
+              </div>
+              <div className="space-y-2 py-3">
+                <div className="flex items-center gap-5 pl-5 text-sm cursor-pointer hover:bg-gray-700 p-1 rounded-lg">
+                  <Sun className="text-slate-200 " />
+                  <p className="font-semibold text-slate-200">Light mode</p>
+                </div>
+                <div
+                  onClick={logoutUser}
+                  className="flex items-center gap-5 pl-5 text-sm cursor-pointer hover:bg-gray-700 p-1 rounded-lg"
+                >
+                  <LogOut className="text-slate-200 " />
+                  <p className="font-semibold text-slate-200">Logout</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>

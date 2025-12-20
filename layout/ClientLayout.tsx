@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import NavbarHOC from "@/components/custom/Navbar/NavbarHOC";
+import LeftSidebarHOC from "@/components/custom/sidebar/LeftSidebarHOC";
 
 export default function ClientLayout({
   children,
@@ -22,11 +23,15 @@ export default function ClientLayout({
   }
 
   return (
-    <>
-      {routePart !== "story" && routePart !== "userLogin" && <NavbarHOC />}
+    <div className="overflow-hidden h-screen">
+      {routePart !== "story" &&
+        routePart !== "userLogin" &&
+        routePart !== "forget-password" &&
+        routePart !== "reset-password" && <NavbarHOC />}
       {/* {routePart !== "userLogin" && <NavbarHOC />} */}
+      {pathname !== "/" && pathname !== "/userLogin" && <LeftSidebarHOC />}
       {children}
       {/* {routePart !== "admin" && <FooterHOC />} */}
-    </>
+    </div>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
-import { LoginFormData } from "@/components/Auth/Login/validation/LoginFormSchema";
-import { SignUpFormData } from "@/components/Auth/Sign-up/validation/SignUpSchema";
+import { forgetPasswordFormData } from "@/components/screens/Auth/forget-password/validation/ForgetaPasswordSchema";
+import { LoginFormData } from "@/components/screens/Auth/Login/validation/LoginFormSchema";
+import { resetPasswordFromData } from "@/components/screens/Auth/reset-password/validation/ResetPasswordSchema";
+import { SignUpFormData } from "@/components/screens/Auth/Sign-up/validation/SignUpSchema";
 import { authServices } from "@/services/authServices";
 import { UserType } from "@/types/userDataType";
 import { createContext, ReactNode, useContext, useState } from "react";
@@ -9,6 +11,9 @@ import { createContext, ReactNode, useContext, useState } from "react";
 type AuthContextType = {
   signup: (data: SignUpFormData) => Promise<any>;
   login: (data: LoginFormData) => Promise<any>;
+  forgetPassword: (data: forgetPasswordFormData) => Promise<any>;
+  resetPassword: (token: string, data: resetPasswordFromData) => Promise<any>;
+  logout: () => Promise<any>;
 };
 
 // ---------- 2. CREATE CONTEXT ----------
@@ -16,7 +21,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // ---------- 3. PROVIDER COMPONENT ----------
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-
   const signup = async (data: SignUpFormData) => {
     try {
       const response = await authServices.register(data);
@@ -42,8 +46,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const forgetPassword = async (data: forgetPasswordFormData) => {
+    const response = await authServices.forgetPassword(data);
+    return;
+  };
+
+  const resetPassword = async (token: string, data: resetPasswordFromData) => {
+    const response = await authServices.resetPassword(token, data);
+    return response;
+  };
+
+  const logout = async () => {
+    return await authServices.logout();
+  };
+
   return (
-    <AuthContext.Provider value={{ signup, login }}>
+    <AuthContext.Provider
+      value={{ signup, login, forgetPassword, resetPassword , logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -23,7 +23,7 @@ export default function Sidebar() {
   const userDetail = localStorage.getItem("user");
   const user = userDetail ? JSON.parse(userDetail) : null;
 
-  const userName = user.name;
+  const userName = user?.name;
   const initials = user?.name
     ?.split(" ") // ["Abhishek", "singh"]
     .map((word: string) => word[0]) // ["A", "s"]
@@ -31,7 +31,7 @@ export default function Sidebar() {
     .toUpperCase();
 
   return (
-    <aside className="w-64 h-[90vh] bg-[#171718] text-[#FFFFFF] border-r border-slate-500 shadow-sm flex flex-col  justify-between p-5">
+    <aside className="w-80 h-[92vh]  top-0 bg-[#171718] text-[#FFFFFF] border-r border-slate-500 shadow-sm flex flex-col justify-between p-5">
       <div className="space-y-50">
         {/* Header */}
         <div>
