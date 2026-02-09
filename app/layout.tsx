@@ -30,11 +30,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0F0F10]`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0F0F10] `}
       >
         <Toaster position="bottom-right" richColors duration={2000} />
         <ModalProvider>
-          <AuthProvider>
+          <AuthProvider> 
             <ClientLayout>{children}</ClientLayout>
           </AuthProvider>
         </ModalProvider>

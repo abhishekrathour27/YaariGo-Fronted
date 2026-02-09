@@ -9,9 +9,12 @@ import {
 } from "./validation/ForgetaPasswordSchema";
 import Button from "@/components/custom/CustomBtn/Button";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 const ForgetPassword = () => {
   const { forgetPassword } = useAuth();
+  const router = useRouter();
+
 
   const {
     register,
@@ -25,16 +28,20 @@ const ForgetPassword = () => {
   const onSubmit = async (data: forgetPasswordFormData) => {
     try {
       const response = forgetPassword(data);
+      router.push("/userLogin")
       return response;
     } catch (error) {
       console.error("reset link have not sent", error);
+    }
+    finally{
+      
     }
   };
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="min-w-sm  mx-auto mt-10 p-4 border rounded-lg shadow"
+      className="min-w-sm  mx-auto mt-10 p-4 border rounded-lg shadow bg-white text-slate-600 "
     >
       <h2 className="text-xl font-semibold mb-4 text-center">
         Forget Password

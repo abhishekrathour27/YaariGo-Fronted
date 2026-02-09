@@ -13,7 +13,7 @@ const AuthTab = ({ initialTab = "login" }: AuthTabsProps) => {
   const [activeTab, setActiveTab] = useState<string>(initialTab);
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gradient-to-r from-fuchsia-600 to-purple-600  px-4">
+    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-r from-fuchsia-600 to-purple-600 ">
       <div className="w-full max-w-md rounded-2xl bg-white shadow-xl border border-gray-100 p-8">
         {/* Tab Container */}
         <Tabs

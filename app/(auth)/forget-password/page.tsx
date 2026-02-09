@@ -3,7 +3,7 @@ import React from "react";
 
 const page = () => {
   return (
-    <div className="flex items-center justify-center w-screen h-screen"> 
+    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-r from-fuchsia-600 to-purple-600"> 
       <ForgetPassword />
     </div>
   );

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Eye, EyeClosed } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Button from "@/components/custom/CustomBtn/Button";
 import {
   resetPasswordFromData,
@@ -17,6 +17,7 @@ const ResetPasswordPage = () => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const { resetPassword } = useAuth();
+  const router = useRouter();
 
   const {
     register,
@@ -36,7 +37,8 @@ const ResetPasswordPage = () => {
       }
       const tokenString = Array.isArray(token) ? token[0] : token;
       const response = await resetPassword(tokenString , data) // ✅ token first argument
-      console.log('response',response);
+      // console.log('response',response);
+      router.push("/userlogin")
       return
     } catch (error) {
       toast.error("Failed to reset password");
@@ -44,12 +46,12 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-[#1D1D1D]">
-      <div className="bg-slate-700 shadow-lg rounded-xl p-6 w-[400px]">
+    <div className="flex items-center justify-center bg-white text-slate-600">
+      <div className=" shadow-lg rounded-xl p-6 w-[400px]">
         <h2 className="text-2xl font-bold mb-4 text-center">Reset Password</h2>
         <form onSubmit={handleSubmit(Submit)} className="space-y-4">
           {/* New Password */}
-          <div className="relative bg-slate-700">
+          <div className="relative text-slate-600">
             <label className="block font-medium">New Password</label>
             <input
               type={showPass ? "text" : "password"}
@@ -71,7 +73,7 @@ const ResetPasswordPage = () => {
           </div>
 
           {/* Confirm Password */}
-          <div className="relative">
+          <div className="relative text-slate-600">
             <label className="block font-medium">Confirm Password</label>
             <input
               type={showConfirm ? "text" : "password"}

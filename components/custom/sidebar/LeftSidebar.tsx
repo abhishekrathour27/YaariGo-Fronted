@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+
+import React from "react";
 import {
   Home,
   MessageCircle,
@@ -7,56 +8,74 @@ import {
   Video,
   Settings,
   LogOut,
+  Users,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Sidebar() {
-  const [active, setActive] = useState("home");
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const nav = [
-    { id: "home", label: "Home", icon: <Home size={18} /> },
-    { id: "video", label: "Video", icon: <Video size={18} /> },
-    { id: "profile", label: "Profile", icon: <User size={18} /> },
-    { id: "messages", label: "Messages", icon: <MessageCircle size={18} /> },
-  ];
-
-  const userDetail = localStorage.getItem("user");
+  const userDetail =
+    typeof window !== "undefined" ? localStorage.getItem("user") : null;
   const user = userDetail ? JSON.parse(userDetail) : null;
 
-  const userName = user?.name;
-  const initials = user?.name
-    ?.split(" ") // ["Abhishek", "singh"]
-    .map((word: string) => word[0]) // ["A", "s"]
-    .join("") // "As"
+  const userName = user?.name || "User";
+  const initials = userName
+    .split(" ")
+    .map((word: string) => word[0])
+    .join("")
     .toUpperCase();
 
+  const nav = [
+    { id: "home", label: "Home", icon: <Home size={18} />, path: "/" },
+    {
+      id: "friend",
+      label: "Friends",
+      icon: <Users size={18} />,
+      path: "/friends-list",
+    },
+    { id: "video", label: "Video", icon: <Video size={18} />, path: "/videos" },
+    {
+      id: "profile",
+      label: "Profile",
+      icon: <User size={18} />,
+      path: `/profile/${user?._id}`,
+    },
+    {
+      id: "messages",
+      label: "Messages",
+      icon: <MessageCircle size={18} />,
+      path: "/messages",
+    },
+  ];
+
   return (
-    <aside className="w-80 h-[92vh]  top-0 bg-[#171718] text-[#FFFFFF] border-r border-slate-500 shadow-sm flex flex-col justify-between p-5">
-      <div className="space-y-50">
-        {/* Header */}
+    <aside className="w-80 h-[92vh] bg-[#171718] text-white  border-r border-slate-500 shadow-sm flex flex-col justify-between p-5">
+      <div className="space-y-40">
+        {/* 🔹 HEADER */}
         <div>
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#5B6FFF] to-[#FF5BA8] flex items-center justify-center text-white font-bold text-lg shadow-md">
-                {initials}
-              </div>
-              <div className="leading-tight">
-                <div className="text-sm font-semibold ">{userName}</div>
-              </div>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center font-bold text-lg shadow-md">
+              {initials}
             </div>
+            <div className="text-sm font-semibold">{userName}</div>
           </div>
 
-          {/* Navigation */}
+          {/* 🔹 NAVIGATION */}
           <nav className="space-y-2">
             {nav.map((item) => {
-              const isActive = active === item.id;
+              const isActive =
+                pathname === item.path ||
+                (item.path !== "/" && pathname.startsWith(item.path));
+
               return (
                 <motion.button
                   key={item.id}
-                  onClick={() => setActive(item.id)}
                   whileHover={{ scale: 1.02 }}
-                  className="w-full flex items-center cursor-pointer gap-3 rounded-xl px-3 py-2 text-sm transition-colors focus:outline-none"
-                  aria-current={isActive ? "page" : undefined}
+                  onClick={() => router.push(item.path)}
+                  className="w-full flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors focus:outline-none cursor-pointer"
                   style={{
                     background: isActive
                       ? "rgba(255,255,255,0.06)"
@@ -84,17 +103,12 @@ export default function Sidebar() {
                       {item.label}
                     </div>
                     {item.id === "messages" && (
-                      <div className="text-xs" style={{ color: "#9AA0A6" }}>
-                        5 new
-                      </div>
+                      <div className="text-xs text-[#9AA0A6]">5 new</div>
                     )}
                   </div>
 
                   {isActive && (
-                    <div
-                      className="hidden md:block text-xs font-semibold"
-                      style={{ color: "#5B6FFF" }}
-                    >
+                    <div className="hidden md:block text-xs font-semibold text-[#5B6FFF]">
                       Active
                     </div>
                   )}
@@ -104,41 +118,16 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        {/* Utilities */}
-        <div
-          className="mt-6 pt-4"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-        >
-          <button
-            className="w-full flex items-center gap-3 rounded-xl px-3 py-2 text-sm"
-            style={{ background: "transparent" }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "rgba(255,255,255,0.03)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "transparent")
-            }
-          >
+        {/* 🔹 UTILITIES */}
+        <div className="pt-4 border-t border-white/10">
+          <button className="w-full flex items-center gap-3 rounded-xl px-3 py-2 text-sm hover:bg-white/5">
             <Settings size={18} />
-            <span className="font-medium" style={{ color: "#FFFFFF" }}>
-              Settings
-            </span>
+            <span className="font-medium">Settings</span>
           </button>
 
-          <button
-            className="w-full mt-2 flex items-center gap-3 rounded-xl px-3 py-2 text-sm"
-            style={{ background: "transparent" }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "rgba(255,255,255,0.03)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "transparent")
-            }
-          >
+          <button className="w-full mt-2 flex items-center gap-3 rounded-xl px-3 py-2 text-sm hover:bg-white/5">
             <LogOut size={18} />
-            <span className="font-medium" style={{ color: "#FFFFFF" }}>
-              Sign out
-            </span>
+            <span className="font-medium">Sign out</span>
           </button>
         </div>
       </div>

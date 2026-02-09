@@ -31,8 +31,9 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const userDetail = localStorage.getItem("user");
+  const userDetail = localStorage?.getItem("user");
   const user = userDetail ? JSON.parse(userDetail) : null;
+  // console.log("uu",user._id)
 
   const initials = user?.name
     ?.split(" ")
@@ -52,17 +53,36 @@ export default function Navbar() {
     }
   };
 
+  const navbar = [
+    {
+      id: HomeIcon,
+      path: "/",
+    },
+    {
+      id: SquarePlay,
+      path: "/video",
+    },
+    {
+      id: Store,
+      path: "/store",
+    },
+    {
+      id: Users,
+      path: "/users",
+    },
+  ];
+
   return (
     <header className="w-full bg-[#171718] border-b border-slate-600 sticky top-0 left-0  z-50 ">
-      <div className="max-w-8xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div className=" px-6 py-3 flex items-center justify-between">
         {/* LEFT */}
-        <div className="flex items-center gap-4">
-          <a
-            href="/"
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 text-black font-semibold shadow-sm hover:scale-105 transition"
-            aria-label="YaariGo home"
-          >
-            Y
+        <div className="flex items-center gap-15">
+          <a href="/" className="flex items-center">
+            <img
+              src="/logo.png"
+              alt="YaariGo"
+              className="h-8 w-auto mt-2 object-contain scale-200 origin-left select-none"
+            />
           </a>
 
           <div className="relative hidden md:block">
@@ -77,14 +97,19 @@ export default function Navbar() {
 
         {/* CENTER */}
         <nav className="flex gap-10">
-          {[HomeIcon, SquarePlay, Store, Users].map((Icon, i) => (
-            <button
-              key={i}
-              className="p-2 rounded-lg hover:bg-gray-600 transition"
-            >
-              <Icon className="w-6 h-6" />
-            </button>
-          ))}
+          {navbar.map((item, i) => {
+            const Icon = item.id;
+            return (
+              <button
+                onAuxClick={() => router.push(item.path)}
+                key={i}
+                className="p-2 rounded-lg hover:bg-gray-600 transition cursor-pointer"
+                onClick={() => router.push(item.path)}
+              >
+                <Icon className="w-6 h-6" />
+              </button>
+            );
+          })}
         </nav>
 
         {/* RIGHT */}
@@ -99,7 +124,7 @@ export default function Navbar() {
 
           <div
             onClick={() => setModal(!modal)}
-            className="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center text-sm font-semibold cursor-pointer hover:scale-105 transition"
+            className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-600 to-blue-500 flex items-center justify-center text-sm font-semibold cursor-pointer hover:scale-105 transition"
           >
             {initials}
           </div>
@@ -109,13 +134,7 @@ export default function Navbar() {
               ref={modalRef}
               className="absolute right-0 top-12 w-75 bg-black text-white rounded-xl shadow-xl overflow-hidden z-50"
             >
-              <div
-                onClick={() => {
-                  setModal(!modal);
-                  router.push("/profile");
-                }}
-                className="flex items-center gap-3 p-4  text-sm cursor-pointer border-b border-slate-400"
-              >
+              <div className="flex items-center gap-3 p-4  text-sm cursor-pointer border-b border-slate-400">
                 <div className="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
                   {initials}
                 </div>
@@ -125,7 +144,13 @@ export default function Navbar() {
                 </div>
               </div>
               <div className="space-y-2 py-3 border-b border-slate-400">
-                <div className="flex items-center gap-5 pl-5 text-sm cursor-pointer hover:bg-gray-700 p-1 rounded-lg">
+                <div
+                  onClick={() => {
+                    setModal(!modal);
+                    router.push(`profile/${user?._id}`);
+                  }}
+                  className="flex items-center gap-5 pl-5 text-sm cursor-pointer hover:bg-gray-700 p-1 rounded-lg"
+                >
                   <UserRound className="text-slate-200 " />
                   <p className="font-semibold text-slate-200">Profile</p>
                 </div>

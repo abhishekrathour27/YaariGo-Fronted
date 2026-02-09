@@ -17,9 +17,6 @@ const page = () => {
 
   return (
     <div className="flex justify-between overflow-y-hidden">
-      <div>
-        <LeftSidebarHOC />
-      </div>
       <div className="">
         <MiddleBarHOC />
       </div>
@@ -27,6 +24,7 @@ const page = () => {
         <RightSidebar />
       </div>
     </div>
+    
   );
 };
 

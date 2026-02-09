@@ -19,7 +19,6 @@ const StorySection: React.FC = () => {
     const newPreviews = URL.createObjectURL(files[0]);
     setPreviews(newPreviews);
     openModal(<StoryInput previews={newPreviews} setImages={setImages} />);
-
     e.currentTarget.value = "";
   };
 
