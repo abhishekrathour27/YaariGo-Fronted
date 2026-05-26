@@ -5,25 +5,36 @@ import { LoginFormData } from "@/components/screens/Auth/Login/validation/LoginF
 import { toast } from "sonner";
 import { forgetPasswordFormData } from "@/components/screens/Auth/forget-password/validation/ForgetaPasswordSchema";
 import { resetPasswordFromData } from "@/components/screens/Auth/reset-password/validation/ResetPasswordSchema";
+import { authenticatedInstance, unauthenticatedInstance } from "@/utils/axios";
+import { API_URL, apiEndPoints } from "@/constant/api";
+
 
 export const authServices = {
     register: async (data: SignUpFormData) => {
         try {
-            const response = await api.post(`${ApiUrl}/user/register`, data);
-            console.log(response);
-            toast.success(response?.data?.message)
+            const response = await unauthenticatedInstance.post(
+                apiEndPoints.signup,
+                data
+            );
+
+            toast.success(response?.data?.message);
             return response?.data;
         } catch (error: any) {
-            toast.error("Signup failed")
+            toast.error(error?.response?.data?.message || "Signup failed");
         }
     },
+
     login: async (data: LoginFormData) => {
         try {
-            const response = await api.post(`${ApiUrl}/user/login`, data);
-            toast.success(response?.data?.message)
-            return response?.data
+            const response = await unauthenticatedInstance.post(
+                apiEndPoints.login,
+                data
+            );
+
+            toast.success(response?.data?.message);
+            return response?.data;
         } catch (error: any) {
-            toast.error(error.message)
+            toast.error(error?.response?.data?.message || "Login failed");
         }
     },
     forgetPassword: async (data: forgetPasswordFormData) => {
@@ -52,25 +63,10 @@ export const authServices = {
         }
     },
     logout: async () => {
-        const token = localStorage.getItem("token");
-
         try {
-            const response = await api.post(
-                `${ApiUrl}/user/logout`,
-                {}, // ✅ empty body
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
             localStorage.removeItem("token");
             localStorage.removeItem("user"); // ✅ VERY IMPORTANT
-
-            toast.success(response?.data?.message);
-            return response?.data;
-
+            toast.success("Logout successfully");
         } catch (error: any) {
             toast.error(
                 error?.response?.data?.message || "Logout failed"

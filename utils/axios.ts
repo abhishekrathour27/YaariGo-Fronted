@@ -5,7 +5,7 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestCo
 const unauthenticatedInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 30000, 
-  withCredentials: true,
+  // removed withCredentials since we don't rely on cookies for auth tokens
   headers: {
     "Content-Type": "application/json",
   },
@@ -14,7 +14,7 @@ const unauthenticatedInstance: AxiosInstance = axios.create({
 const authenticatedInstance: AxiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 30000,
-  withCredentials: true,
+  // cookies not required for bearer tokens
   headers: {
     "Content-Type": "application/json",
   },

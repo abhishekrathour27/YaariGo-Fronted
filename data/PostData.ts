@@ -14,7 +14,7 @@ export const posts = [
     content: {
       caption: "This is my social media image",
       image: {
-        url: "/uploads/post-image-1.jpg", // ya cloudinary / public path
+        url: "post-image.jpg", // ya cloudinary / public path
         alt: "User traditional outfit photo",
         width: 1080,
         height: 1350,

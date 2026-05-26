@@ -21,7 +21,8 @@ export default function Sidebar() {
     typeof window !== "undefined" ? localStorage.getItem("user") : null;
   const user = userDetail ? JSON.parse(userDetail) : null;
 
-  const userName = user?.name || "User";
+  const userName =
+    user?.username?.charAt(0).toUpperCase() + user?.username?.slice(1) || "User";
   const initials = userName
     .split(" ")
     .map((word: string) => word[0])

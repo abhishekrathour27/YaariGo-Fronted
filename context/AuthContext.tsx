@@ -35,9 +35,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const response = await authServices.login(data);
 
-      if (response?.data?.user) {
-        const { password, ...safeUser } = response.data.user;
+      // console.log("LOGIN RESPONSE", response);
+
+      const loginData = response?.data?.user;
+
+      if (loginData) {
+        const safeUser = {
+          username: loginData.username,
+          email: loginData.email,
+        };
+
+        // console.log("safe", safeUser);
+
         localStorage.setItem("user", JSON.stringify(safeUser));
+
+        localStorage.setItem("accessToken", response?.data?.accessToken);
       }
 
       return response;
@@ -45,7 +57,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error(error);
     }
   };
-
   const forgetPassword = async (data: forgetPasswordFormData) => {
     const response = await authServices.forgetPassword(data);
     return;
@@ -62,7 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ signup, login, forgetPassword, resetPassword , logout }}
+      value={{ signup, login, forgetPassword, resetPassword, logout }}
     >
       {children}
     </AuthContext.Provider>

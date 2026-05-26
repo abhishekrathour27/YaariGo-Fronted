@@ -33,9 +33,10 @@ export default function Navbar() {
 
   const userDetail = localStorage?.getItem("user");
   const user = userDetail ? JSON.parse(userDetail) : null;
+  console.log("dett", user);
   // console.log("uu",user._id)
 
-  const initials = user?.name
+  const initials = user?.username
     ?.split(" ")
     .map((word: string) => word[0])
     .join("")
@@ -139,7 +140,10 @@ export default function Navbar() {
                   {initials}
                 </div>
                 <div>
-                  <p className="font-semibold">{user?.name}</p>
+                  <p className="font-semibold">
+                    {user?.username?.charAt(0).toUpperCase() +
+                      user?.username?.slice(1)}
+                  </p>
                   <p className="text-sm text-gray-400">{user?.email}</p>
                 </div>
               </div>

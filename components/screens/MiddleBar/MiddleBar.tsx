@@ -5,7 +5,7 @@ import CreatePost from "./Components/createPost";
 const MiddleBar = () => {
   return (
     <div>
-      <div className="w-[45vw] shadow-xl space-y-2 overflow-y-scroll hide-scrollbar h-[92vh] ml-40 mt-5   ">
+      <div className="w-[45vw] shadow-xl space-y-2 overflow-y-scroll hide-scrollbar h-[92vh] ml-40">
         <CreatePost/>
         <StorySection />
         <PostSection />

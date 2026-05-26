@@ -36,7 +36,6 @@ const LoginForm: React.FC<LoginFormProps> = ({switchToSignUp}) => {
       console.log(response);
       if (response?.status) {
         router.push("/");
-        localStorage.setItem("token", response?.data?.token);
         // toast.success("Login successfully")
       }
     } catch (err) {
