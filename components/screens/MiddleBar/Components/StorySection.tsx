@@ -1,47 +1,74 @@
 "use client";
 import { useModal } from "@/context/ModalContext";
 import { Plus } from "lucide-react";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import StoryInput from "../../StoryI&O/StoryInput";
 import StoryOutput from "../../StoryI&O/StoryOutput";
 import Button from "@/components/custom/CustomBtn/Button";
+import { postServices } from "@/services/postServices";
 
 const StorySection: React.FC = () => {
-  const [images, setImages] = useState<string[]>([]); // base64
-  const [previews, setPreviews] = useState<string>(); // object URLs (if needed)
+  const [stories, setStories] = useState<any[]>([]);
+  const [images, setImages] = useState<string[]>([]); // fallback/local
+  const [previews, setPreviews] = useState<string>(); 
+  const [isLoading, setIsLoading] = useState(true);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { openModal } = useModal();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files!;
-    if (!files || files.length === 0) return;
-
-    const newPreviews = URL.createObjectURL(files[0]);
-    setPreviews(newPreviews);
-    openModal(<StoryInput previews={newPreviews} setImages={setImages} />);
-    e.currentTarget.value = "";
+  const getInitials = (name?: string) => {
+    if (!name) return "U";
+    return name
+      .split(/[\s_-]+/)
+      .map((word: string) => word[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
   };
 
-  const handleRemoveStory = (index: number) => {
-    setImages((prev) => {
-      if (prev?.[index]) URL.revokeObjectURL(prev[index]);
-      return prev.filter((_, i) => i !== index);
-    });
+  const loadStories = async () => {
+    try {
+      setIsLoading(true);
+      const response = await postServices.getAllStories();
+      if (response && response.status === "success") {
+        setStories(response.data || []);
+      }
+    } catch (error) {
+      console.error("Error loading stories:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadStories();
+  }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    const newPreviews = URL.createObjectURL(file);
+    setPreviews(newPreviews);
+    openModal(
+      <StoryInput
+        previews={newPreviews}
+        file={file}
+        onStoryCreated={loadStories}
+        setImages={setImages}
+      />
+    );
+    e.currentTarget.value = "";
   };
 
   const userDetail = typeof window !== "undefined" ? localStorage.getItem("user") : null;
   const user = userDetail ? JSON.parse(userDetail) : null;
-
-  const initials = user?.name
-    ?.split(" ") // ["Abhishek", "Singh"]
-    .map((word: string) => word[0]) // ["A", "S"]
-    .join("") // "AS"
-    .toUpperCase();
+  const initials = getInitials(user?.username || user?.name);
 
   return (
     <div className="w-full bg-[#171718] p-2 flex flex-col lg:flex-row items-start gap-8 pt-2 rounded-lg shadow-xl">
       {/* Left: user card */}
-      <div className="bg-[#36363abc] pl-10 rounded-2xl  p-6 shadow-lg flex flex-col items-center justify-center gap-2">
+      <div className="bg-[#36363abc] pl-10 rounded-2xl p-6 shadow-lg flex flex-col items-center justify-center gap-2">
         <div className="h-20 w-20 bg-gray-300 rounded-2xl relative flex items-center justify-center text-2xl font-semibold text-gray-800 shadow-inner">
           {initials}
         </div>
@@ -53,8 +80,7 @@ const StorySection: React.FC = () => {
         <input
           ref={fileInputRef}
           type="file"
-          multiple
-          accept="image/*"
+          accept="image/*,video/*"
           onChange={handleFileChange}
           className="hidden"
         />
@@ -75,30 +101,55 @@ const StorySection: React.FC = () => {
       {/* Right: previews (horizontal scroll) */}
       <div className="flex-1 overflow-x-auto hide-scrollbar scroll-smooth">
         <div className="flex gap-4 pb-2">
-          {images.map((src, idx) => (
-            <div
-              key={idx}
-              className="relative rounded-lg overflow-hidden shadow-md h-52 w-40 bg-gray-800 cursor-pointer shrink-0"
-            >
-              <div className="bg-indigo-600 h-8 w-8 rounded-full absolute left-2 top-3 flex justify-center items-center font-semibold">
-                {initials}
-              </div>
-              <img
-                src={images[idx] ?? src}
-                alt={`preview-${idx}`}
-                className="w-full h-full object-cover"
-                onClick={() =>
-                  openModal(
-                    <StoryOutput
-                      previews={previews}
-                      images={images[idx]}
-                      handleRemoveStory={() => handleRemoveStory(idx)}
-                    />
-                  )
-                }
-              />
+          {isLoading ? (
+            <div className="flex items-center justify-center py-10 w-full text-gray-400 text-sm">
+              Loading stories...
             </div>
-          ))}
+          ) : stories.length === 0 ? (
+            <div className="flex items-center justify-center py-10 w-full text-gray-500 text-sm">
+              No active stories. Be the first to share one!
+            </div>
+          ) : (
+            stories.map((story, idx) => {
+              const storyInitials = getInitials(story.user?.username || story.user?.email);
+              return (
+                <div
+                  key={story._id || idx}
+                  className="relative rounded-lg overflow-hidden shadow-md h-52 w-40 bg-gray-800 cursor-pointer shrink-0"
+                >
+                  <div className="bg-indigo-600 text-white h-8 w-8 rounded-full absolute left-2 top-3 flex justify-center items-center font-semibold text-xs z-10 shadow-md">
+                    {storyInitials}
+                  </div>
+                  {story.mediaType === "video" ? (
+                    <video
+                      src={story.mediaUrl}
+                      className="w-full h-full object-cover"
+                      onClick={() =>
+                        openModal(
+                          <StoryOutput
+                            story={story}
+                          />
+                        )
+                      }
+                    />
+                  ) : (
+                    <img
+                      src={story.mediaUrl}
+                      alt={`story-${idx}`}
+                      className="w-full h-full object-cover"
+                      onClick={() =>
+                        openModal(
+                          <StoryOutput
+                            story={story}
+                          />
+                        )
+                      }
+                    />
+                  )}
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

@@ -33,7 +33,7 @@ export default function Navbar() {
 
   const userDetail = localStorage?.getItem("user");
   const user = userDetail ? JSON.parse(userDetail) : null;
-  console.log("dett", user);
+  // console.log("dett", user);
   // console.log("uu",user._id)
 
   const initials = user?.username

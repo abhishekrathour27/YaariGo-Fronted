@@ -38,14 +38,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // console.log("LOGIN RESPONSE", response);
 
       const loginData = response?.data?.user;
+      console.log("loginData",loginData)
 
       if (loginData) {
         const safeUser = {
+          _id: loginData._id,
           username: loginData.username,
           email: loginData.email,
         };
 
-        // console.log("safe", safeUser);
+        console.log("safe", safeUser);
 
         localStorage.setItem("user", JSON.stringify(safeUser));
 
