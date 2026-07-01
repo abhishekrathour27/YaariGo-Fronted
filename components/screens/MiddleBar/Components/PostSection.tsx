@@ -2,6 +2,32 @@ import React, { useState, useEffect } from "react";
 import { Ellipsis, MessageCircle, Share, ThumbsUp } from "lucide-react";
 import { postServices } from "@/services/postServices";
 
+export const PostSkeleton = () => (
+  <div className="bg-[#171718] p-4 rounded-xl border border-gray-800 animate-pulse space-y-4">
+    {/* Header skeleton */}
+    <div className="flex items-center gap-3">
+      <div className="h-10 w-10 bg-slate-800 rounded-full" />
+      <div className="flex-1 space-y-2">
+        <div className="h-3.5 bg-slate-800 rounded w-1/3" />
+        <div className="h-2.5 bg-slate-800 rounded w-1/4" />
+      </div>
+    </div>
+    {/* Caption skeleton */}
+    <div className="space-y-2">
+      <div className="h-3 bg-slate-800 rounded w-full" />
+      <div className="h-3 bg-slate-800 rounded w-5/6" />
+    </div>
+    {/* Media block skeleton */}
+    <div className="h-60 bg-slate-800 rounded-lg w-full" />
+    {/* Action buttons skeleton */}
+    <div className="flex justify-between border-t border-gray-800 pt-3">
+      <div className="h-4 bg-slate-800 rounded w-16" />
+      <div className="h-4 bg-slate-800 rounded w-16" />
+      <div className="h-4 bg-slate-800 rounded w-16" />
+    </div>
+  </div>
+);
+
 interface PostSectionProps {
   refreshTrigger?: number;
 }
@@ -116,8 +142,9 @@ const PostSection: React.FC<PostSectionProps> = ({ refreshTrigger }) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20 text-gray-400">
-        Loading posts...
+      <div className="flex flex-col gap-4 my-3">
+        <PostSkeleton />
+        <PostSkeleton />
       </div>
     );
   }

@@ -11,20 +11,58 @@ import {
   Sun,
   UserRound,
   Users,
+  Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { notificationServices } from "@/services/notificationServices";
 
 export default function Navbar() {
   const [modal, setModal] = useState(false);
   const modalRef = useRef<HTMLDivElement | null>(null);
 
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationsRef = useRef<HTMLDivElement | null>(null);
+
   const { logout } = useAuth();
+
+  const fetchNotifications = async () => {
+    try {
+      const data = await notificationServices.getAllNotifications();
+      if (data?.data) {
+        setNotifications(data.data);
+      }
+    } catch (err) {
+      console.error("Error fetching notifications in Navbar:", err);
+    }
+  };
+
+  const deleteNotif = async (id: string) => {
+    try {
+      const data = await notificationServices.deleteNotification(id);
+      if (data) {
+        setNotifications((prev) => prev.filter((item) => item._id !== id));
+      }
+    } catch (err) {
+      console.error("Error deleting notification:", err);
+    }
+  };
+
+  useEffect(() => {
+    const userDetail = localStorage?.getItem("user");
+    if (userDetail) {
+      fetchNotifications();
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
         setModal(false);
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(e.target as Node)) {
+        setShowNotifications(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -69,7 +107,7 @@ export default function Navbar() {
     },
     {
       id: Users,
-      path: "/users",
+      path: "/friends-list",
     },
   ];
 
@@ -119,9 +157,93 @@ export default function Navbar() {
             <MessageCircle />
           </button>
 
-          <button className="p-2 rounded-full hover:bg-gray-600 transition">
-            <Bell />
-          </button>
+          <div ref={notificationsRef} className="relative">
+            <button 
+              onClick={() => {
+                setShowNotifications(!showNotifications);
+                if (!showNotifications) {
+                  fetchNotifications();
+                }
+              }}
+              className="p-2 rounded-full hover:bg-gray-600 transition relative cursor-pointer"
+            >
+              <Bell className="w-6 h-6 text-slate-200" />
+              {notifications.length > 0 && (
+                <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-[#171718]">
+                  {notifications.length}
+                </span>
+              )}
+            </button>
+
+            {showNotifications && (
+              <div className="absolute right-0 top-12 w-[340px] bg-[#1a1a1b] text-white rounded-xl shadow-2xl border border-slate-700 overflow-hidden z-50 animate-in fade-in slide-in-from-top-3 duration-200">
+                <div className="p-4 border-b border-slate-700 flex items-center justify-between">
+                  <h3 className="font-semibold text-base text-slate-100">Notifications</h3>
+                  {notifications.length > 0 && (
+                    <span className="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">
+                      {notifications.length} Unread
+                    </span>
+                  )}
+                </div>
+
+                <div className="max-h-80 overflow-y-auto divide-y divide-slate-800 custom-scrollbar">
+                  {notifications.length === 0 ? (
+                    <div className="p-8 text-center text-slate-400 flex flex-col items-center gap-2">
+                      <Bell className="w-8 h-8 text-slate-600" />
+                      <p className="text-sm">All caught up!</p>
+                      <p className="text-xs text-slate-500">No new notifications.</p>
+                    </div>
+                  ) : (
+                    notifications.map((notif) => {
+                      const notifInitials = notif.sender?.username
+                        ?.split(" ")
+                        .map((word: string) => word[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2);
+                      
+                      return (
+                        <div key={notif._id} className="p-3.5 flex items-start gap-3 hover:bg-slate-900 transition duration-150 group">
+                          {notif.sender?.profilePicture ? (
+                            <img
+                              src={notif.sender.profilePicture}
+                              alt={notif.sender.username}
+                              className="w-9 h-9 rounded-full object-cover border border-slate-700"
+                            />
+                          ) : (
+                            <div className="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center text-xs font-semibold text-slate-300 border border-slate-600">
+                              {notifInitials || "U"}
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-slate-200">
+                              <span className="font-semibold text-slate-100">{notif.sender?.username || "Someone"}</span>{" "}
+                              {notif.message}
+                            </p>
+                            <span className="text-[10px] text-slate-500 mt-1 block">
+                              {new Date(notif.createdAt).toLocaleDateString(undefined, {
+                                month: "short",
+                                day: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit"
+                              })}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => deleteNotif(notif._id)}
+                            className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-slate-800 transition opacity-0 group-hover:opacity-100 focus:opacity-100 duration-150 cursor-pointer"
+                            title="Dismiss notification"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           <div
             onClick={() => setModal(!modal)}

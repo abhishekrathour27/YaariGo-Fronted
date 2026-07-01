@@ -150,7 +150,7 @@ authenticatedInstance.interceptors.response.use(
         refreshSubscribers = []; // Clear the queue
         
         if (typeof window !== "undefined") {
-          window.location.href = "/auth/login?error=session_expired";
+          window.location.href = "/userLogin?error=session_expired";
         }
         return Promise.reject(refreshError);
       } finally {

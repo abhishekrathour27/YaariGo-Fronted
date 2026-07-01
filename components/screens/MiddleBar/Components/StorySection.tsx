@@ -102,8 +102,15 @@ const StorySection: React.FC = () => {
       <div className="flex-1 overflow-x-auto hide-scrollbar scroll-smooth">
         <div className="flex gap-4 pb-2">
           {isLoading ? (
-            <div className="flex items-center justify-center py-10 w-full text-gray-400 text-sm">
-              Loading stories...
+            <div className="flex gap-4">
+              {[...Array(4)].map((_, i) => (
+                <div
+                  key={i}
+                  className="relative rounded-lg overflow-hidden shadow-md h-52 w-40 bg-slate-800 animate-pulse shrink-0"
+                >
+                  <div className="bg-slate-700 h-8 w-8 rounded-full absolute left-2 top-3" />
+                </div>
+              ))}
             </div>
           ) : stories.length === 0 ? (
             <div className="flex items-center justify-center py-10 w-full text-gray-500 text-sm">

@@ -16,6 +16,7 @@ import {
   Camera,
   UserPlus,
   UserMinus,
+  UserCheck,
   MessageSquare,
   ThumbsUp,
   MessageCircle,
@@ -25,6 +26,7 @@ import {
 import Link from "next/link";
 import { userServices } from "@/services/userServices";
 import { postServices } from "@/services/postServices";
+import { PostSkeleton } from "@/components/screens/MiddleBar/Components/PostSection";
 
 // Edit Bio Modal Component
 interface EditBioModalProps {
@@ -178,6 +180,61 @@ const EditBioModal: React.FC<EditBioModalProps> = ({ currentBio, userId, onSave,
   );
 };
 
+const ProfileSkeleton = () => (
+  <div className="flex flex-col items-center animate-pulse">
+    <div className="w-[70vw] min-h-screen bg-[#1f202286] ml-10 text-white shadow-2xl">
+      {/* Cover photo skeleton */}
+      <div className="w-full h-[300px] bg-slate-800" />
+      
+      {/* Profile info skeleton */}
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="relative flex flex-col md:flex-row items-center md:items-end gap-5 -mt-20 z-10 pb-4 border-b border-gray-800">
+          {/* Avatar skeleton */}
+          <div className="w-[170px] h-[170px] rounded-full border-4 border-indigo-800 bg-slate-800 shrink-0 shadow-lg" />
+          
+          {/* Name & Stats skeleton */}
+          <div className="flex-1 space-y-3 pb-2 text-center md:text-left w-full">
+            <div className="h-8 bg-slate-800 rounded w-1/3 mx-auto md:mx-0" />
+            <div className="h-4 bg-slate-800 rounded w-1/2 mx-auto md:mx-0" />
+            <div className="flex justify-center md:justify-start items-center gap-6">
+              <div className="h-4 bg-slate-800 rounded w-20" />
+              <div className="h-4 bg-slate-800 rounded w-20" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs list skeleton */}
+      <div className="flex justify-start gap-6 bg-transparent px-6 border-b border-gray-800 py-4">
+        <div className="h-4 bg-slate-800 rounded w-16" />
+        <div className="h-4 bg-slate-800 rounded w-16" />
+        <div className="h-4 bg-slate-800 rounded w-16" />
+        <div className="h-4 bg-slate-800 rounded w-16" />
+      </div>
+
+      {/* Tab content skeleton */}
+      <div className="mt-6 px-6 pb-10 space-y-6 max-w-2xl mx-auto">
+        <div className="bg-[#242526] p-4 rounded-xl border border-gray-800 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 bg-slate-800 rounded-full" />
+            <div className="flex-1 h-8 bg-slate-800 rounded-full" />
+          </div>
+        </div>
+        <div className="bg-[#242526] p-4 rounded-xl border border-gray-800 space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 bg-slate-800 rounded-full" />
+            <div className="flex-1 space-y-2">
+              <div className="h-3.5 bg-slate-800 rounded w-1/3" />
+              <div className="h-2.5 bg-slate-800 rounded w-1/4" />
+            </div>
+          </div>
+          <div className="h-40 bg-slate-800 rounded-lg w-full" />
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 const Page = () => {
   const { id } = useParams();
   const router = useRouter();
@@ -189,6 +246,8 @@ const Page = () => {
   const [profileData, setProfileData] = useState<any>(null);
   const [isOwner, setIsOwner] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [friendshipStatus, setFriendshipStatus] = useState<string>("none");
+  const [friendActionLoading, setFriendActionLoading] = useState(false);
 
   // Cover & Profile uploading status
   const [isUploadingCover, setIsUploadingCover] = useState(false);
@@ -242,6 +301,7 @@ const Page = () => {
       if (response && response.status === "success") {
         setProfileData(response.data.profile);
         setIsOwner(response.data.isOwner);
+        setFriendshipStatus(response.data.friendshipStatus || "none");
       }
     } catch (error) {
       console.error("Error loading user profile:", error);
@@ -312,24 +372,30 @@ const Page = () => {
     }
   };
 
-  const handleFollowToggle = async () => {
+  const handleFriendshipAction = async (action: "send" | "accept" | "delete" | "unfriend" | "cancel") => {
     if (!profileData || !id) return;
-    const isFollowing = profileData.followers?.some((f: any) => f._id === loggedInUser?._id);
-
     try {
-      if (isFollowing) {
+      setFriendActionLoading(true);
+      if (action === "send" || action === "accept") {
+        const response = await userServices.followUser(id as string);
+        if (response) {
+          await loadUserProfile();
+        }
+      } else if (action === "unfriend" || action === "cancel") {
         const response = await userServices.unfollowUser(id as string);
         if (response) {
           await loadUserProfile();
         }
-      } else {
-        const response = await userServices.followUser(id as string);
+      } else if (action === "delete") {
+        const response = await userServices.deleteFriendRequest(id as string);
         if (response) {
           await loadUserProfile();
         }
       }
     } catch (error) {
-      console.error("Error toggling follow:", error);
+      console.error(`Error performing friend action: ${action}`, error);
+    } finally {
+      setFriendActionLoading(false);
     }
   };
 
@@ -421,12 +487,7 @@ const Page = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] text-white">
-        <Loader2 className="animate-spin text-indigo-500 mb-2" size={40} />
-        <p className="text-gray-400 text-sm">Loading user profile...</p>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (!profileData) {
@@ -530,10 +591,7 @@ const Page = () => {
               <p className="text-sm text-gray-400 mb-2">{profileData.bio?.bioText || "No bio yet."}</p>
               <div className="flex justify-center md:justify-start items-center gap-6 text-sm">
                 <span className="text-gray-300">
-                  <strong className="text-white">{profileData.followerCount || 0}</strong> Followers
-                </span>
-                <span className="text-gray-300">
-                  <strong className="text-white">{profileData.followingCount || 0}</strong> Following
+                  <strong className="text-white">{profileData.friends?.length || 0}</strong> Friends
                 </span>
               </div>
             </div>
@@ -541,20 +599,59 @@ const Page = () => {
             {/* RELATION ACTION BUTTONS */}
             {!isOwner && (
               <div className="flex gap-3 mb-2 shrink-0">
-                <button
-                  onClick={handleFollowToggle}
-                  className={`px-6 py-2 rounded-md font-medium text-sm transition flex items-center gap-1.5 ${
-                    isFollowing
-                      ? "bg-slate-700 hover:bg-slate-600 text-white"
-                      : "bg-indigo-600 hover:bg-indigo-700 text-white"
-                  }`}
-                >
-                  {isFollowing ? <UserMinus size={16} /> : <UserPlus size={16} />}
-                  {isFollowing ? "Unfollow" : "Follow"}
-                </button>
+                {friendshipStatus === "friends" && (
+                  <button
+                    onClick={() => handleFriendshipAction("unfriend")}
+                    disabled={friendActionLoading}
+                    className="px-6 py-2 rounded-md font-medium text-sm transition flex items-center gap-1.5 bg-slate-700 hover:bg-slate-600 text-white cursor-pointer"
+                  >
+                    <UserMinus size={16} />
+                    Unfriend
+                  </button>
+                )}
+                {friendshipStatus === "sent_pending" && (
+                  <button
+                    onClick={() => handleFriendshipAction("cancel")}
+                    disabled={friendActionLoading}
+                    className="px-6 py-2 rounded-md font-medium text-sm transition flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 cursor-pointer"
+                  >
+                    <UserMinus size={16} />
+                    Cancel Request
+                  </button>
+                )}
+                {friendshipStatus === "received_pending" && (
+                  <>
+                    <button
+                      onClick={() => handleFriendshipAction("accept")}
+                      disabled={friendActionLoading}
+                      className="px-6 py-2 rounded-md font-medium text-sm transition flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
+                    >
+                      <UserCheck size={16} />
+                      Accept Request
+                    </button>
+                    <button
+                      onClick={() => handleFriendshipAction("delete")}
+                      disabled={friendActionLoading}
+                      className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 rounded-md font-medium text-sm transition flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <UserMinus size={16} />
+                      Delete Request
+                    </button>
+                  </>
+                )}
+                {friendshipStatus === "none" && (
+                  <button
+                    onClick={() => handleFriendshipAction("send")}
+                    disabled={friendActionLoading}
+                    className="px-6 py-2 rounded-md font-medium text-sm transition flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer"
+                  >
+                    <UserPlus size={16} />
+                    Add Friend
+                  </button>
+                )}
                 <button
                   onClick={() => router.push(`/messages?chat=${profileData._id}`)}
-                  className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-md font-medium text-sm transition flex items-center gap-1.5"
+                  className="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-md font-medium text-sm transition flex items-center gap-1.5 cursor-pointer"
                 >
                   <MessageSquare size={16} />
                   Message
@@ -613,8 +710,9 @@ const Page = () => {
 
                   {/* Render Posts List */}
                   {isPostsLoading ? (
-                    <div className="flex justify-center items-center py-10">
-                      <Loader2 className="animate-spin text-indigo-500" size={24} />
+                    <div className="space-y-4">
+                      <PostSkeleton />
+                      <PostSkeleton />
                     </div>
                   ) : userPosts.length === 0 ? (
                     <div className="text-center py-10 text-gray-500 text-sm bg-[#242526] rounded-xl border border-gray-800">
@@ -862,19 +960,18 @@ const Page = () => {
                 </div>
               </TabsContent>
 
-              {/* ================= FRIENDS (Followers/Following) TAB ================= */}
+              {/* ================= FRIENDS TAB ================= */}
               <TabsContent value="friends">
                 <div className="space-y-6">
-                  {/* Followers Sub-section */}
                   <div>
                     <h2 className="text-md font-bold mb-3 border-b border-gray-800 pb-2 text-indigo-400">
-                      Followers ({profileData.followers?.length || 0})
+                      Friends ({profileData.friends?.length || 0})
                     </h2>
-                    {(!profileData.followers || profileData.followers.length === 0) ? (
-                      <p className="text-sm text-gray-500 py-2">No followers yet.</p>
+                    {(!profileData.friends || profileData.friends.length === 0) ? (
+                      <p className="text-sm text-gray-500 py-2">No friends yet.</p>
                     ) : (
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {profileData.followers.map((f: any) => {
+                        {profileData.friends.map((f: any) => {
                           const fInitials = getInitials(f.username);
                           return (
                             <div
@@ -883,44 +980,7 @@ const Page = () => {
                             >
                               <div className="w-16 h-16 rounded-full bg-slate-800 border-2 border-indigo-600 overflow-hidden flex items-center justify-center text-lg font-bold text-white shrink-0">
                                 {f.profilePicture ? (
-                                  <img src={f.profilePicture} alt="follower" className="w-full h-full object-cover" />
-                                ) : (
-                                  fInitials
-                                )}
-                              </div>
-                              <p className="font-semibold text-sm text-white truncate max-w-full">{f.username}</p>
-                              <Link
-                                href={`/profile/${f._id}`}
-                                className="text-xs bg-[#3a3b3c] hover:bg-[#4a4b4c] px-4 py-1.5 rounded-md font-medium text-gray-200 transition"
-                              >
-                                View Profile
-                              </Link>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Following Sub-section */}
-                  <div>
-                    <h2 className="text-md font-bold mb-3 border-b border-gray-800 pb-2 text-indigo-400">
-                      Following ({profileData.followings?.length || 0})
-                    </h2>
-                    {(!profileData.followings || profileData.followings.length === 0) ? (
-                      <p className="text-sm text-gray-500 py-2">Not following any users yet.</p>
-                    ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {profileData.followings.map((f: any) => {
-                          const fInitials = getInitials(f.username);
-                          return (
-                            <div
-                              key={f._id}
-                              className="relative bg-[#242526] p-4 rounded-xl flex flex-col items-center gap-3 border border-gray-800 shadow-md hover:border-gray-700 transition"
-                            >
-                              <div className="w-16 h-16 rounded-full bg-slate-800 border-2 border-indigo-600 overflow-hidden flex items-center justify-center text-lg font-bold text-white shrink-0">
-                                {f.profilePicture ? (
-                                  <img src={f.profilePicture} alt="following" className="w-full h-full object-cover" />
+                                  <img src={f.profilePicture} alt="friend" className="w-full h-full object-cover" />
                                 ) : (
                                   fInitials
                                 )}
