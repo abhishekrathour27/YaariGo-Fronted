@@ -1,6 +1,6 @@
 "use client";
 import { useModal } from "@/context/ModalContext";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import React, { useRef, useState, useEffect } from "react";
 import StoryInput from "../../StoryI&O/StoryInput";
 import StoryOutput from "../../StoryI&O/StoryOutput";
@@ -60,6 +60,7 @@ const StorySection: React.FC = () => {
     );
     e.currentTarget.value = "";
   };
+
 
   const userDetail = typeof window !== "undefined" ? localStorage.getItem("user") : null;
   const user = userDetail ? JSON.parse(userDetail) : null;
@@ -135,6 +136,7 @@ const StorySection: React.FC = () => {
                         openModal(
                           <StoryOutput
                             story={story}
+                            onStoryDeleted={loadStories}
                           />
                         )
                       }
@@ -148,6 +150,7 @@ const StorySection: React.FC = () => {
                         openModal(
                           <StoryOutput
                             story={story}
+                            onStoryDeleted={loadStories}
                           />
                         )
                       }

@@ -14,7 +14,10 @@ export const authServices = {
         try {
             const response = await unauthenticatedInstance.post(
                 apiEndPoints.signup,
-                data
+                {
+                    ...data,
+                    username: data.name
+                }
             );
 
             toast.success(response?.data?.message);
@@ -39,23 +42,27 @@ export const authServices = {
     },
     forgetPassword: async (data: forgetPasswordFormData) => {
         try {
-            const response = await api.post(`${ApiUrl}/user/forget-password`, data);
+            const response = await unauthenticatedInstance.post(
+                apiEndPoints.forgetPassword,
+                data
+            );
             toast.success(response?.data?.message);
-            return response?.data
+            return response?.data;
         } catch (error: any) {
-            toast.error(error.message)
+            toast.error(
+                error?.response?.data?.message || "Failed to request password reset"
+            );
         }
     },
     resetPassword: async (token: string, data: resetPasswordFromData) => {
         try {
-            const response = await api.post(
-                `${ApiUrl}/user/reset-password/${token}`,
+            const response = await unauthenticatedInstance.post(
+                apiEndPoints.resetPassword(token),
                 data
             );
 
             toast.success(response?.data?.message);
             return response?.data;
-
         } catch (error: any) {
             toast.error(
                 error?.response?.data?.message || "Failed to reset password"

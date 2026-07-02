@@ -120,4 +120,16 @@ export const postServices = {
             toast.error(error?.response?.data?.message || "Failed to fetch stories");
         }
     },
+
+    deleteStory: async (storyId: string) => {
+        try {
+            const response = await authenticatedInstance.delete(
+                apiEndPoints.deleteStory(storyId)
+            );
+            toast.success(response?.data?.message || "Story deleted successfully");
+            return response?.data;
+        } catch (error: any) {
+            toast.error(error?.response?.data?.message || "Failed to delete story");
+        }
+    },
 };

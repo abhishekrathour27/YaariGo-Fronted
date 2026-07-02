@@ -3,7 +3,7 @@ export const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export const apiEndPoints = {
     login: "/api/auth/login",
     signup: "/api/auth/register",
-    forgetPassword: "/api/auth/forgot-password",
+    forgetPassword: "/api/auth/forget-password",
     resetPassword: (token:string) => `/api/auth/reset-password/${token}`,
     refreshToken: "/auth/refresh-token",
     logout: "/api/auth/logout",
@@ -36,6 +36,7 @@ export const apiEndPoints = {
     sharePost: (postId: string) => `/api/users/posts/share/${postId}`,
     createStory: "/api/users/story",
     getAllStories: "/api/users/story",
+    deleteStory: (storyId: string) => `/api/users/story/${storyId}`,
 
     // Message routes
     sendMessage: (receiverId: string) => `/api/message/send/${receiverId}`,

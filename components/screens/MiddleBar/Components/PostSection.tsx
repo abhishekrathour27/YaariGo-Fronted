@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Ellipsis, MessageCircle, Share, ThumbsUp } from "lucide-react";
 import { postServices } from "@/services/postServices";
+import { toast } from "sonner";
 
 export const PostSkeleton = () => (
   <div className="bg-[#171718] p-4 rounded-xl border border-gray-800 animate-pulse space-y-4">
@@ -115,14 +116,33 @@ const PostSection: React.FC<PostSectionProps> = ({ refreshTrigger }) => {
 
   const handleShare = async (postId: string) => {
     try {
+      const shareUrl = `${window.location.origin}/post/${postId}`;
+      
+      // Attempt Web Share API first
+      if (navigator.share) {
+        await navigator.share({
+          title: "YaariGo Post",
+          text: "Check out this post on YaariGo!",
+          url: shareUrl,
+        });
+      } else {
+        // Fallback: Copy link to clipboard
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Post link copied to clipboard!");
+      }
+
       const response = await postServices.sharePost(postId);
       if (response && response.status === "success") {
         setPosts((prevPosts) =>
           prevPosts.map((p) => (p._id === postId ? response.data : p))
         );
       }
-    } catch (error) {
-      console.error("Error sharing post:", error);
+    } catch (error: any) {
+      // Avoid throwing error if user cancelled the share sheet
+      if (error.name !== "AbortError") {
+        console.error("Error sharing post:", error);
+        toast.error("Failed to share post");
+      }
     }
   };
 

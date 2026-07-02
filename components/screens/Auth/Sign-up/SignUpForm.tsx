@@ -34,7 +34,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ switchToLogin }) => {
     try {
       const response = await signup(data);
 
-      console.log(response.status);
+      // console.log(response.status);
 
       if (response?.status === "success") {
         switchToLogin();
