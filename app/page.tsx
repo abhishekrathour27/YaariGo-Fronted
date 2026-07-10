@@ -8,12 +8,12 @@ import { useEffect } from "react";
 const page = () => {
   const router = useRouter();
 
-  const user = localStorage?.getItem("user");
   useEffect(() => {
+    const user = localStorage?.getItem("user");
     if (!user) {
       router.push("/userLogin");
     }
-  }, [user]);
+  }, [router]);
 
   return (
     <div className="flex justify-between overflow-y-hidden">

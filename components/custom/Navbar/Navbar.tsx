@@ -49,9 +49,12 @@ export default function Navbar() {
     }
   };
 
+  const [user, setUser] = useState<any>(null);
+
   useEffect(() => {
     const userDetail = localStorage?.getItem("user");
     if (userDetail) {
+      setUser(JSON.parse(userDetail));
       fetchNotifications();
     }
   }, []);
@@ -69,16 +72,11 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const userDetail = localStorage?.getItem("user");
-  const user = userDetail ? JSON.parse(userDetail) : null;
-  // console.log("dett", user);
-  // console.log("uu",user._id)
-
   const initials = user?.username
     ?.split(" ")
     .map((word: string) => word[0])
     .join("")
-    .toUpperCase();
+    .toUpperCase() || "";
 
   const router = useRouter();
 
