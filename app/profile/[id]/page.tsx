@@ -182,7 +182,9 @@ const EditBioModal: React.FC<EditBioModalProps> = ({ currentBio, userId, onSave,
 
 const ProfileSkeleton = () => (
   <div className="flex flex-col items-center animate-pulse">
-    <div className="w-[70vw] min-h-screen bg-[#1f202286] ml-10 text-white shadow-2xl">
+    <div className="relative isolate w-[70vw] min-h-screen ml-10 text-white shadow-2xl bg-[#0f0f10]/85 border-x border-slate-900/50 overflow-hidden">
+      {/* Ambient background placeholder */}
+      <div className="absolute inset-0 -z-10 pointer-events-none opacity-10 bg-gradient-to-b from-slate-800 to-transparent" />
       {/* Cover photo skeleton */}
       <div className="w-full h-[300px] bg-slate-800" />
       
@@ -517,7 +519,12 @@ const Page = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="w-[70vw] min-h-screen bg-[#1f202286] ml-10 text-white shadow-2xl">
+      <div className="relative isolate w-[70vw] min-h-screen ml-10 text-white shadow-2xl bg-[#0f0f10]/85 border-x border-slate-900/50 overflow-hidden">
+        {/* Ambient background using the cover photo */}
+        <div 
+          className="absolute inset-0 -z-10 pointer-events-none opacity-20 blur-[100px] bg-cover bg-center transition-all duration-500"
+          style={{ backgroundImage: `url(${coverUrl})` }}
+        />
         {/* ================= COVER PHOTO ================= */}
         <div className="relative w-full h-[300px] overflow-hidden bg-slate-900 border-b border-slate-800">
           <img
@@ -682,9 +689,9 @@ const Page = () => {
                 <div className="space-y-4 max-w-2xl mx-auto">
                   {/* Create Post (Only shown if Owner) */}
                   {isOwner && (
-                    <div className="bg-[#242526] p-4 rounded-xl border border-gray-800 shadow-md">
+                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm text-gray-800">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center font-bold text-indigo-700 shrink-0">
                           {initials}
                         </div>
                         <input
@@ -693,7 +700,7 @@ const Page = () => {
                           onChange={(e) => setNewPostContent(e.target.value)}
                           placeholder="What's on your mind?"
                           disabled={isPosting}
-                          className="flex-1 bg-[#3a3b3c] rounded-full px-4 py-2 text-sm text-gray-200 outline-none focus:bg-[#4a4b4c]"
+                          className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm text-gray-800 outline-none focus:bg-gray-200 placeholder-gray-500"
                         />
                         {(newPostContent.trim()) && (
                           <button
@@ -715,7 +722,7 @@ const Page = () => {
                       <PostSkeleton />
                     </div>
                   ) : userPosts.length === 0 ? (
-                    <div className="text-center py-10 text-gray-500 text-sm bg-[#242526] rounded-xl border border-gray-800">
+                    <div className="text-center py-10 text-gray-400 text-sm bg-white rounded-xl border border-gray-200 shadow-sm">
                       No posts published yet.
                     </div>
                   ) : (
@@ -728,7 +735,7 @@ const Page = () => {
                       return (
                         <div
                           key={post._id}
-                          className="bg-[#242526] text-gray-200 rounded-xl shadow-md border border-gray-800 relative overflow-hidden"
+                          className="bg-white text-gray-800 rounded-xl shadow-sm border border-gray-200 relative overflow-hidden"
                         >
                           {/* Header */}
                           <div className="flex items-center justify-between px-4 py-3 relative">
@@ -737,8 +744,8 @@ const Page = () => {
                                 {postInitials}
                               </div>
                               <div>
-                                <p className="font-semibold leading-tight text-sm">{postCreator}</p>
-                                <p className="text-[10px] text-gray-400">{postTime}</p>
+                                <p className="font-semibold leading-tight text-sm text-gray-900">{postCreator}</p>
+                                <p className="text-[10px] text-gray-500">{postTime}</p>
                               </div>
                             </div>
                             {isOwner && (
@@ -750,16 +757,16 @@ const Page = () => {
                                       activeDropdownPostId === post._id ? null : post._id
                                     )
                                   }
-                                  className="p-1 hover:bg-slate-800 rounded-full transition cursor-pointer"
+                                  className="p-1 hover:bg-gray-100 rounded-full transition cursor-pointer"
                                 >
-                                  <MoreVertical className="text-gray-400 w-4 h-4" />
+                                  <MoreVertical className="text-gray-500 w-4 h-4" />
                                 </button>
                                 {activeDropdownPostId === post._id && (
-                                  <div className="absolute right-0 mt-1 bg-slate-800 border border-slate-700 rounded-md shadow-xl z-20 py-1 min-w-[100px]">
+                                  <div className="absolute right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-xl z-20 py-1 min-w-[100px]">
                                     <button
                                       type="button"
                                       onClick={() => handleDeletePost(post._id)}
-                                      className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-600 hover:text-white transition font-medium"
+                                      className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-50 hover:text-red-600 transition font-medium"
                                     >
                                       Delete Post
                                     </button>
@@ -772,13 +779,13 @@ const Page = () => {
                           {/* Caption */}
                           {post.content && (
                             <div className="px-4 pb-3">
-                              <p className="text-sm">{post.content}</p>
+                              <p className="text-sm text-gray-800">{post.content}</p>
                             </div>
                           )}
 
                           {/* Media */}
                           {post.mediaUrl && (
-                            <div className="w-full flex items-center justify-center bg-black/40 border-y border-gray-800">
+                            <div className="w-full flex items-center justify-center bg-gray-50 border-y border-gray-200">
                               {post.mediaType === "video" ? (
                                 <video
                                   src={post.mediaUrl}
@@ -797,7 +804,7 @@ const Page = () => {
                           )}
 
                           {/* Stats */}
-                          <div className="flex justify-between px-4 pt-3 text-xs text-gray-400">
+                          <div className="flex justify-between px-4 pt-3 text-xs text-gray-500">
                             <p>{post.likeCount || 0} likes</p>
                             <div className="flex gap-4">
                               <p>{post.commentCount || 0} comments</p>
@@ -805,19 +812,19 @@ const Page = () => {
                             </div>
                           </div>
 
-                          <div className="mx-4 my-2 border-t border-gray-800" />
+                          <div className="mx-4 my-2 border-t border-gray-200" />
 
                           {/* Actions */}
-                          <div className="flex justify-around px-4 py-1 text-xs">
+                          <div className="flex justify-around px-4 py-1 text-xs text-gray-600">
                             <button
                               onClick={() => handleLike(post._id)}
-                              className="flex items-center gap-2 hover:bg-slate-800 px-4 py-2 rounded-md transition"
+                              className="flex items-center gap-2 hover:bg-gray-100 px-4 py-2 rounded-md transition"
                             >
                               <ThumbsUp
                                 size={16}
                                 className={hasLiked ? "text-blue-500 fill-blue-500" : ""}
                               />
-                              <span className={hasLiked ? "text-blue-500" : ""}>Like</span>
+                              <span className={hasLiked ? "text-blue-500 font-medium" : "font-medium"}>Like</span>
                             </button>
 
                             <button
@@ -827,24 +834,24 @@ const Page = () => {
                                   [post._id]: !prev[post._id],
                                 }));
                               }}
-                              className="flex items-center gap-2 hover:bg-slate-800 px-4 py-2 rounded-md transition"
+                              className="flex items-center gap-2 hover:bg-gray-100 px-4 py-2 rounded-md transition"
                             >
                               <MessageCircle size={16} />
-                              <span>Comment</span>
+                              <span className="font-medium">Comment</span>
                             </button>
 
                             <button
                               onClick={() => handleShare(post._id)}
-                              className="flex items-center gap-2 hover:bg-slate-800 px-4 py-2 rounded-md transition"
+                              className="flex items-center gap-2 hover:bg-gray-100 px-4 py-2 rounded-md transition"
                             >
                               <Share size={16} />
-                              <span>Share</span>
+                              <span className="font-medium">Share</span>
                             </button>
                           </div>
 
                           {/* Comment Box */}
                           {openComments[post._id] && (
-                            <div className="px-4 pb-4 space-y-3 border-t border-gray-800 pt-3 bg-slate-900/30">
+                            <div className="px-4 pb-4 space-y-3 border-t border-gray-200 pt-3 bg-gray-50/50">
                               {/* Comment List */}
                               <div className="space-y-3 max-h-48 overflow-y-auto pr-1">
                                 {(post.comments || []).map((c: any, i: number) => {
@@ -855,27 +862,27 @@ const Page = () => {
                                       <div className="h-6 w-6 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-[9px] shrink-0">
                                         {cInitials}
                                       </div>
-                                      <div className="flex-1 bg-slate-800 p-2 rounded-xl">
+                                      <div className="flex-1 bg-gray-100 p-2 rounded-xl border border-gray-200">
                                         <div className="flex justify-between items-center mb-1">
-                                          <p className="font-semibold text-gray-200">{cUser}</p>
+                                          <p className="font-semibold text-gray-800">{cUser}</p>
                                           <p className="text-[9px] text-gray-500">{getRelativeTime(c.createdAt)}</p>
                                         </div>
-                                        <p className="text-gray-300">{c.text}</p>
+                                        <p className="text-gray-700">{c.text}</p>
                                       </div>
                                     </div>
                                   );
                                 })}
                                 {(post.comments || []).length === 0 && (
-                                  <p className="text-[10px] text-gray-500 text-center py-1">No comments yet.</p>
+                                  <p className="text-[10px] text-gray-400 text-center py-1 font-medium">No comments yet.</p>
                                 )}
                               </div>
 
                               {/* Write Comment */}
-                              <div className="flex gap-2 pt-2 border-t border-gray-800">
+                              <div className="flex gap-2 pt-2 border-t border-gray-200">
                                 <input
                                   type="text"
                                   placeholder="Write a comment..."
-                                  className="flex-1 bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-md outline-none text-xs text-gray-200"
+                                  className="flex-1 bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-md outline-none text-xs text-gray-800 placeholder-gray-400"
                                   value={commentTexts[post._id] || ""}
                                   onChange={(e) => {
                                     setCommentTexts((prev) => ({

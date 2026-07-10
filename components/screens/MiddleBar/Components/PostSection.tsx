@@ -4,27 +4,27 @@ import { postServices } from "@/services/postServices";
 import { toast } from "sonner";
 
 export const PostSkeleton = () => (
-  <div className="bg-[#171718] p-4 rounded-xl border border-gray-800 animate-pulse space-y-4">
+  <div className="bg-[#171718] p-4 rounded-xl border border-gray-700 animate-pulse space-y-4">
     {/* Header skeleton */}
     <div className="flex items-center gap-3">
-      <div className="h-10 w-10 bg-slate-800 rounded-full" />
+      <div className="h-10 w-10 bg-slate-700 rounded-full" />
       <div className="flex-1 space-y-2">
-        <div className="h-3.5 bg-slate-800 rounded w-1/3" />
-        <div className="h-2.5 bg-slate-800 rounded w-1/4" />
+        <div className="h-3.5 bg-slate-700 rounded w-1/3" />
+        <div className="h-2.5 bg-slate-700 rounded w-1/4" />
       </div>
     </div>
     {/* Caption skeleton */}
     <div className="space-y-2">
-      <div className="h-3 bg-slate-800 rounded w-full" />
-      <div className="h-3 bg-slate-800 rounded w-5/6" />
+      <div className="h-3 bg-slate-700 rounded w-full" />
+      <div className="h-3 bg-slate-700 rounded w-5/6" />
     </div>
     {/* Media block skeleton */}
-    <div className="h-60 bg-slate-800 rounded-lg w-full" />
+    <div className="h-60 bg-slate-700 rounded-lg w-full" />
     {/* Action buttons skeleton */}
-    <div className="flex justify-between border-t border-gray-800 pt-3">
-      <div className="h-4 bg-slate-800 rounded w-16" />
-      <div className="h-4 bg-slate-800 rounded w-16" />
-      <div className="h-4 bg-slate-800 rounded w-16" />
+    <div className="flex justify-between border-t border-gray-700 pt-3">
+      <div className="h-4 bg-slate-700 rounded w-16" />
+      <div className="h-4 bg-slate-700 rounded w-16" />
+      <div className="h-4 bg-slate-700 rounded w-16" />
     </div>
   </div>
 );
@@ -188,7 +188,7 @@ const PostSection: React.FC<PostSectionProps> = ({ refreshTrigger }) => {
         return (
           <div
             key={post._id}
-            className="bg-[#171718] text-gray-200 rounded-xl shadow-md border border-gray-700 relative"
+            className="bg-[#171718] text-gray-200 rounded-xl shadow-md border border-gray-700 relative overflow-hidden"
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3">
@@ -283,7 +283,7 @@ const PostSection: React.FC<PostSectionProps> = ({ refreshTrigger }) => {
                     return (
                       <div key={c._id || i} className="flex gap-2 items-start text-sm">
                         <div className="h-7 w-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-semibold text-[10px] shrink-0">
-                          {commentInitials}
+                           {commentInitials}
                         </div>
                         <div className="flex-1 bg-gray-800 p-2 rounded-xl">
                           <div className="flex justify-between items-center mb-1">
